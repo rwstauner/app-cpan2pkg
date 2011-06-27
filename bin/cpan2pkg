@@ -1,10 +1,21 @@
 #!/usr/bin/perl
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 
 use 5.012;
 use strict;
 use warnings;
 
 package main;
+BEGIN {
+  $main::VERSION = '2.111780';
+}
 # ABSTRACT: generating native linux packages from cpan
 
 # for testing purposes
@@ -15,13 +26,22 @@ use App::CPAN2Pkg;
 App::CPAN2Pkg->run( @ARGV );
 exit;
 
-__END__
+
+
+=pod
+
+=head1 NAME
+
+main - generating native linux packages from cpan
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 SYNOPSIS
 
     $ cpan2pkg
     $ cpan2pkg Module::Foo Module::Bar ...
-
 
 =head1 DESCRIPTION
 
@@ -57,4 +77,20 @@ steps over and over as needed.
 
 Read L<this blog entry|http://jquelin.blogspot.com/2009/01/cpan-modules-native-linux-
 packages.html> for this module rationale.
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 

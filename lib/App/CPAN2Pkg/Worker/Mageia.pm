@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg::Worker::Mageia;
+BEGIN {
+  $App::CPAN2Pkg::Worker::Mageia::VERSION = '2.111780';
+}
 # ABSTRACT: worker dedicated to Mageia distribution
 
 use HTML::TreeBuilder;
@@ -148,10 +159,36 @@ override cpan2dist_flavour => sub { "CPANPLUS::Dist::Mageia" };
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
+
+
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg::Worker::Mageia - worker dedicated to Mageia distribution
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 DESCRIPTION
 
 This class implements Mageia specificities that a general worker doesn't
 know how to handle. It inherits from L<App::CPAN2Pkg::Worker::RPM>.
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 

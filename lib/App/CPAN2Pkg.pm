@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.012;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg;
+BEGIN {
+  $App::CPAN2Pkg::VERSION = '2.111780';
+}
 # ABSTRACT: generating native linux packages from cpan
 
 # although it's not strictly needed to load POE::Kernel manually (since
@@ -41,44 +52,10 @@ has _modules => (
 
 # -- public methods
 
-=method all_modules
-
-    my @modules = $app->all_modules;
-
-Return the list of all modules that have been / are being processed.
-
-=method seen_module
-
-    my $bool = $app->seen_module( $modname );
-
-Return true if C<$modname> has already been seen. It can be either
-finished processing, or still ongoing.
-
-=method register_module
-
-    $app->register_module( $modname, $module );
-
-Store C<$module> as the L<App::CPAN2Pkg::Module> object tracking
-C<$modname>.
-
-=method
-
-    my $module = $app->module( $modname );
-
-Return the C<$module> object registered for C<$modname>.
-
-=cut
 
 # those methods above are provided by moose traits for free
 
 
-=method run
-
-    App::CPAN2Pkg->run( [ @modules ] );
-
-Start the application, with an initial batch of C<@modules> to build.
-
-=cut
 
 sub run {
     my (undef, @modules) = @_;
@@ -100,13 +77,22 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
-__END__
+
+
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg - generating native linux packages from cpan
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 SYNOPSIS
 
     $ cpan2pkg
     $ cpan2pkg Module::Foo Module::Bar ...
-
 
 =head1 DESCRIPTION
 
@@ -115,6 +101,39 @@ Don't use this module directly, refer to the C<cpan2pkg> script instead.
 C<App::CPAN2Pkg> is the main entry point for the C<cpan2pkg> application. It
 also provides some information about processed modules.
 
+=head1 METHODS
+
+=head2 all_modules
+
+    my @modules = $app->all_modules;
+
+Return the list of all modules that have been / are being processed.
+
+=head2 seen_module
+
+    my $bool = $app->seen_module( $modname );
+
+Return true if C<$modname> has already been seen. It can be either
+finished processing, or still ongoing.
+
+=head2 register_module
+
+    $app->register_module( $modname, $module );
+
+Store C<$module> as the L<App::CPAN2Pkg::Module> object tracking
+C<$modname>.
+
+=head2
+
+    my $module = $app->module( $modname );
+
+Return the C<$module> object registered for C<$modname>.
+
+=head2 run
+
+    App::CPAN2Pkg->run( [ @modules ] );
+
+Start the application, with an initial batch of C<@modules> to build.
 
 =head1 BUGS
 
@@ -123,8 +142,6 @@ rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=App-CPAN2Pkg>. I will
 be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
-
-
 
 =head1 SEE ALSO
 
@@ -153,4 +170,20 @@ L<http://annocpan.org/dist/App-CPAN2Pkg>
 L<http://cpanratings.perl.org/d/App-CPAN2Pkg>
 
 =back
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 

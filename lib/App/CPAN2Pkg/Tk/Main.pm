@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.012;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg::Tk::Main;
+BEGIN {
+  $App::CPAN2Pkg::Tk::Main::VERSION = '2.111780';
+}
 # ABSTRACT: main cpan2pkg window
 
 use DateTime;
@@ -57,22 +68,6 @@ sub START {
 
 {
 
-=event log_out
-
-=event log_err
-
-=event log_comment
-
-=event log_result
-
-=event log_step
-
-    log_XXX( $module, $line )
-
-Log a C<$line> of output / stderr / comment / result / step in
-C<$module> tab.
-
-=cut
 
     event log_out => sub {
         my ($self, $module, $line) = @_[OBJECT, ARG0 .. $#_ ];
@@ -108,14 +103,6 @@ C<$module> tab.
     };
 }
 
-=event module_state
-
-    module_state( $module )
-
-Sent from the controller when a module has changed status (either
-local or upstream).
-
-=cut
 
 event module_state => sub {
     my ($self, $module) = @_[OBJECT, ARG0 .. $#_ ];
@@ -154,14 +141,6 @@ event module_state => sub {
 
 # -- public events
 
-=event new_module
-
-    new_module( $module )
-
-Received from the controller when a new module needs to be investigated.
-Said module will be followed by a L<App::CPAN2Pkg::Worker> session.
-
-=cut
 
 event new_module => sub {
     my ($self, $module) = @_[OBJECT, ARG0];
@@ -397,14 +376,70 @@ sub _build_notebook {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
 
-=for Pod::Coverage
-    START
 
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg::Tk::Main - main cpan2pkg window
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 DESCRIPTION
 
 This class implements the whole L<Tk> graphical interface. It is a POE
 session driving events and updating the display as workers change
 status.
+
+=head1 EVENTS
+
+=head2 log_out
+
+=head2 log_err
+
+=head2 log_comment
+
+=head2 log_result
+
+=head2 log_step
+
+    log_XXX( $module, $line )
+
+Log a C<$line> of output / stderr / comment / result / step in
+C<$module> tab.
+
+=head2 module_state
+
+    module_state( $module )
+
+Sent from the controller when a module has changed status (either
+local or upstream).
+
+=head2 new_module
+
+    new_module( $module )
+
+Received from the controller when a new module needs to be investigated.
+Said module will be followed by a L<App::CPAN2Pkg::Worker> session.
+
+=for Pod::Coverage START
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
+

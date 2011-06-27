@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg::Worker::RPM;
+BEGIN {
+  $App::CPAN2Pkg::Worker::RPM::VERSION = '2.111780';
+}
 # ABSTRACT: worker specialized in rpm distributions
 
 use Moose;
@@ -21,27 +32,12 @@ Readonly my $K => $poe_kernel;
 
 # -- class attributes
 
-=classattr rpmlock
-
-A lock (L<App::CPAN2Pkg::Lock> object) to prevent more than one rpm
-installation at a time.
-
-=cut
 
 class_has rpmlock => ( ro, isa=>'App::CPAN2Pkg::Lock', default=>sub{ App::CPAN2Pkg::Lock->new } );
 
 
 # -- attributes
 
-=attr srpm
-
-Path to the source RPM of the module built with C<cpan2dist>.
-
-=attr rpm
-
-Path to the RPM of the module built with C<cpan2dist>.
-
-=cut
 
 has srpm => ( rw, isa=>'Path::Class::File' );
 has rpm  => ( rw, isa=>'Path::Class::File' );
@@ -112,14 +108,6 @@ has rpm  => ( rw, isa=>'Path::Class::File' );
 
 # -- events
 
-=event get_rpm_lock
-
-    get_rpm_lock( $event )
-
-Try to get a hold on RPM lock. Fire C<$event> if lock was grabbed
-successfully, otherwise wait 5 seconds before trying again.
-
-=cut
 
 event get_rpm_lock => sub {
     my ($self, $event) = @_[OBJECT, ARG0];
@@ -145,10 +133,62 @@ event get_rpm_lock => sub {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
+
+
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg::Worker::RPM - worker specialized in rpm distributions
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 DESCRIPTION
 
 This class implements a worker specific to RPM-based distributions. It
 inherits from L<App::CPAN2Pkg::Worker>.
+
+=head1 CLASS ATTRIBUTES
+
+=head2 rpmlock
+
+A lock (L<App::CPAN2Pkg::Lock> object) to prevent more than one rpm
+installation at a time.
+
+=head1 ATTRIBUTES
+
+=head2 srpm
+
+Path to the source RPM of the module built with C<cpan2dist>.
+
+=head2 rpm
+
+Path to the RPM of the module built with C<cpan2dist>.
+
+=head1 EVENTS
+
+=head2 get_rpm_lock
+
+    get_rpm_lock( $event )
+
+Try to get a hold on RPM lock. Fire C<$event> if lock was grabbed
+successfully, otherwise wait 5 seconds before trying again.
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 

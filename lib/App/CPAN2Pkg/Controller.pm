@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg::Controller;
+BEGIN {
+  $App::CPAN2Pkg::Controller::VERSION = '2.111780';
+}
 # ABSTRACT: controller for cpan2pkg interface
 
 use Moose;
@@ -20,11 +31,6 @@ Readonly my $K => $poe_kernel;
 
 # -- public attributes
 
-=attr queue
-
-A list of modules to be build, to be specified during object creation.
-
-=cut
 
 has queue       => ( ro, auto_deref, isa =>'ArrayRef[Str]' );
 
@@ -46,14 +52,6 @@ sub START {
 
 # -- events
 
-=event new_module_wanted
-
-    new_module_wanted( $modname )
-
-Request C<$modname> to be investigated. It can already exist in this
-run, in which case it won't be propagated any further.
-
-=cut
 
 event new_module_wanted => sub {
     my ($self, $modname) = @_[OBJECT, ARG0];
@@ -75,14 +73,6 @@ event new_module_wanted => sub {
 };
 
 
-=event module_ready_locally
-
-    module_ready_locally( $modname )
-
-Received when a worker has finished building / installing / fetching a
-module locally, meaning it is available on this very platform.
-
-=cut
 
 event module_ready_locally => sub {
     my ($self, $modname) = @_[OBJECT, ARG0];
@@ -92,15 +82,6 @@ event module_ready_locally => sub {
 };
 
 
-=event module_ready_upstream
-
-    module_ready_upstream( $modname )
-
-Received when a worker has witnessed a module is available upstream,
-either because it existed previously, or because it has been built on
-build system.
-
-=cut
 
 event module_ready_upstream => sub {
     my ($self, $modname) = @_[OBJECT, ARG0];
@@ -112,14 +93,68 @@ event module_ready_upstream => sub {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
 
-=for Pod::Coverage
-    START
 
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg::Controller - controller for cpan2pkg interface
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 DESCRIPTION
 
 This module implements a POE session responsible for dispatching events
 from and to the interface.
+
+=head1 ATTRIBUTES
+
+=head2 queue
+
+A list of modules to be build, to be specified during object creation.
+
+=head1 EVENTS
+
+=head2 new_module_wanted
+
+    new_module_wanted( $modname )
+
+Request C<$modname> to be investigated. It can already exist in this
+run, in which case it won't be propagated any further.
+
+=head2 module_ready_locally
+
+    module_ready_locally( $modname )
+
+Received when a worker has finished building / installing / fetching a
+module locally, meaning it is available on this very platform.
+
+=head2 module_ready_upstream
+
+    module_ready_upstream( $modname )
+
+Received when a worker has witnessed a module is available upstream,
+either because it existed previously, or because it has been built on
+build system.
+
+=for Pod::Coverage START
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 

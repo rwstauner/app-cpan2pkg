@@ -1,8 +1,19 @@
+#
+# This file is part of App-CPAN2Pkg
+#
+# This software is copyright (c) 2009 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package App::CPAN2Pkg::Worker;
+BEGIN {
+  $App::CPAN2Pkg::Worker::VERSION = '2.111780';
+}
 # ABSTRACT: poe session to drive a module packaging
 
 use List::MoreUtils qw{ firstidx };
@@ -22,16 +33,6 @@ Readonly my $K => $poe_kernel;
 
 # -- class attributes
 
-=classattr cpanplus_init
-
-A boolean to state whether CPANPLUS has been initialized with new index.
-
-=classattr cpanplus_lock
-
-A lock (L<App::CPAN2Pkg::Lock> object) to prevent more than one cpanplus
-initialization at a time.
-
-=cut
 
 class_has cpanplus_init => (
     rw,
@@ -45,11 +46,6 @@ class_has cpanplus_lock => ( ro, isa=>'App::CPAN2Pkg::Lock', default=>sub{ App::
 
 # -- public attributes
 
-=attr module
-
-The name of the module to build / install / submit / whatever.
-
-=cut
 
 has module => ( ro, required, isa=>'App::CPAN2Pkg::Module' );
 
@@ -98,13 +94,6 @@ sub START {
 
 {
 
-=event check_upstream_availability
-
-    check_upstream_availability( )
-
-Check if module is available in the distribution repositories.
-
-=cut
 
     event check_upstream_availability => sub { };
 
@@ -128,13 +117,6 @@ Check if module is available in the distribution repositories.
 
 {
 
-=event check_local_availability
-
-    check_local_availability( )
-
-Check if the module is installed locally.
-
-=cut
 
     event check_local_availability => sub {
         my $self    = shift;
@@ -179,13 +161,6 @@ Check if the module is installed locally.
 
 {
 
-=event install_from_upstream
-
-    install_from_upstream( )
-
-Install module from distribution repository.
-
-=cut
 
     event install_from_upstream => sub {
         my $self = shift;
@@ -226,15 +201,6 @@ Install module from distribution repository.
 
 {
 
-=event cpanplus_initialize
-
-    cpanplus_initialize( $event )
-
-Run CPANPLUS initialization (reload index, etc). Fire C<$event> when
-finished, or if this has already been done. Wait 10 seconds before
-retrying if initialization is currently ongoing.
-
-=cut
 
     event cpanplus_initialize => sub {
         my ($self, $event) = @_[OBJECT, ARG0];
@@ -310,13 +276,6 @@ retrying if initialization is currently ongoing.
 
 {
 
-=event cpanplus_find_prereqs
-
-    cpanplus_find_prereqs( )
-
-Run CPANPLUS to find the module prereqs.
-
-=cut
 
     event cpanplus_find_prereqs => sub {
         my $self = shift;
@@ -379,21 +338,6 @@ Run CPANPLUS to find the module prereqs.
 
 {
 
-=event local_prereqs_wait
-
-    local_prereqs_wait( )
-
-Request to wait for local prereqs to be all present before attempting to
-build the module locally.
-
-=event local_prereqs_available
-
-    local_prereqs_available( $modname )
-
-Inform the worker that C<$modname> is now available locally. This may
-unblock the worker from waiting if all the needed modules are present.
-
-=cut
 
     event local_prereqs_wait => sub {
         my $self = shift;
@@ -430,13 +374,6 @@ unblock the worker from waiting if all the needed modules are present.
 
 {
 
-=event cpanplus_create_package
-
-    cpanplus_create_package( )
-
-Try to create a native package for the module using C<cpan2dist>.
-
-=cut
 
     event cpanplus_create_package => sub {
         my $self    = shift;
@@ -479,13 +416,6 @@ Try to create a native package for the module using C<cpan2dist>.
 
 {
 
-=event local_install_from_package
-
-    local_install_from_package( )
-
-Install the native package generated previously by C<cpan2dist>.
-
-=cut
 
     event local_install_from_package => sub {
         my $self    = shift;
@@ -529,13 +459,6 @@ Install the native package generated previously by C<cpan2dist>.
 
 {
 
-=event upstream_import_package
-
-    upstream_import_package( )
-
-Import the package in upstream repository.
-
-=cut
 
     event upstream_import_package => sub {
         my $self    = shift;
@@ -576,21 +499,6 @@ Import the package in upstream repository.
 
 {
 
-=event upstream_prereqs_wait
-
-    upstream_prereqs_wait( )
-
-Request to wait for upstream prereqs to be all present before attempting
-to build the module locally.
-
-=event upstream_prereqs_available
-
-    upstream_prereqs_available( $modname )
-
-Inform the worker that C<$modname> is now available upstream. This may
-unblock the worker from waiting if all the needed modules are present.
-
-=cut
 
     event upstream_prereqs_wait => sub {
         my $self = shift;
@@ -633,13 +541,6 @@ unblock the worker from waiting if all the needed modules are present.
 
 {
 
-=event upstream_build_package
-
-    upstream_build_package( )
-
-Request package to be built on upstream build system.
-
-=cut
 
     event upstream_build_package => sub {
         my $self    = shift;
@@ -710,33 +611,12 @@ Request package to be built on upstream build system.
 
 # -- public methods
 
-=method cpan2dist_flavour
-
-    my $backend = $worker->cpan2dist_flavour;
-
-Return the cpanplus backend (C<CPANPLUS::Dist::*>) to be used by the
-worker when running C<cpan2dist>.
-
-=cut
 
 sub cpan2dist_flavour { die "should be overridden in child class!" }
 
 
 {
 
-=method run_command
-
-    $worker->run_command( $command, $event );
-
-Run a C<$command> in another process, and takes care of everything.
-Since it uses L<POE::Wheel::Run> underneath, it understands various
-stuff such as running a code reference. Note: commands will be launched
-under a C<C> locale.
-
-Upon completion, yields back an C<$event> with the result status and the
-command output.
-
-=cut
 
     sub run_command {
         my ($self, $cmd, $event) = @_;
@@ -787,10 +667,17 @@ command output.
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
 
-=for Pod::Coverage
-    START
+
+=pod
+
+=head1 NAME
+
+App::CPAN2Pkg::Worker - poe session to drive a module packaging
+
+=head1 VERSION
+
+version 2.111780
 
 =head1 DESCRIPTION
 
@@ -801,4 +688,145 @@ to match the diversity of Linux distributions.
 It is spawned by C<App::CPAN2Pkg::Controller> and uses a
 C<App::CPAN2Pkg::Module> object to track module information.
 
+=head1 CLASS ATTRIBUTES
+
+=head2 cpanplus_init
+
+A boolean to state whether CPANPLUS has been initialized with new index.
+
+=head2 cpanplus_lock
+
+A lock (L<App::CPAN2Pkg::Lock> object) to prevent more than one cpanplus
+initialization at a time.
+
+=head1 ATTRIBUTES
+
+=head2 module
+
+The name of the module to build / install / submit / whatever.
+
+=head1 METHODS
+
+=head2 cpan2dist_flavour
+
+    my $backend = $worker->cpan2dist_flavour;
+
+Return the cpanplus backend (C<CPANPLUS::Dist::*>) to be used by the
+worker when running C<cpan2dist>.
+
+=head2 run_command
+
+    $worker->run_command( $command, $event );
+
+Run a C<$command> in another process, and takes care of everything.
+Since it uses L<POE::Wheel::Run> underneath, it understands various
+stuff such as running a code reference. Note: commands will be launched
+under a C<C> locale.
+
+Upon completion, yields back an C<$event> with the result status and the
+command output.
+
+=head1 EVENTS
+
+=head2 check_upstream_availability
+
+    check_upstream_availability( )
+
+Check if module is available in the distribution repositories.
+
+=head2 check_local_availability
+
+    check_local_availability( )
+
+Check if the module is installed locally.
+
+=head2 install_from_upstream
+
+    install_from_upstream( )
+
+Install module from distribution repository.
+
+=head2 cpanplus_initialize
+
+    cpanplus_initialize( $event )
+
+Run CPANPLUS initialization (reload index, etc). Fire C<$event> when
+finished, or if this has already been done. Wait 10 seconds before
+retrying if initialization is currently ongoing.
+
+=head2 cpanplus_find_prereqs
+
+    cpanplus_find_prereqs( )
+
+Run CPANPLUS to find the module prereqs.
+
+=head2 local_prereqs_wait
+
+    local_prereqs_wait( )
+
+Request to wait for local prereqs to be all present before attempting to
+build the module locally.
+
+=head2 local_prereqs_available
+
+    local_prereqs_available( $modname )
+
+Inform the worker that C<$modname> is now available locally. This may
+unblock the worker from waiting if all the needed modules are present.
+
+=head2 cpanplus_create_package
+
+    cpanplus_create_package( )
+
+Try to create a native package for the module using C<cpan2dist>.
+
+=head2 local_install_from_package
+
+    local_install_from_package( )
+
+Install the native package generated previously by C<cpan2dist>.
+
+=head2 upstream_import_package
+
+    upstream_import_package( )
+
+Import the package in upstream repository.
+
+=head2 upstream_prereqs_wait
+
+    upstream_prereqs_wait( )
+
+Request to wait for upstream prereqs to be all present before attempting
+to build the module locally.
+
+=head2 upstream_prereqs_available
+
+    upstream_prereqs_available( $modname )
+
+Inform the worker that C<$modname> is now available upstream. This may
+unblock the worker from waiting if all the needed modules are present.
+
+=head2 upstream_build_package
+
+    upstream_build_package( )
+
+Request package to be built on upstream build system.
+
+=for Pod::Coverage START
+
+=head1 AUTHOR
+
+Jerome Quelin <jquelin@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
 
