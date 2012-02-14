@@ -6,6 +6,7 @@ use warnings;
 
 package main;
 # ABSTRACT: generating native linux packages from cpan
+# PODNAME: cpan2pkg
 
 # for testing purposes
 use Find::Lib '../lib';
